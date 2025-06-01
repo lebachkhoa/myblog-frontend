@@ -1,27 +1,40 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-    const [username, setUsername] = useState("");
+export default function LoginPage() {
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch("https://api.backendtips.site/auth/login", {
+            const res = await fetch("http://localhost:3000/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, password }),
                 credentials: "include"
             })
+
+            // const res = await fetch("https://api.backendtips.site/auth/login", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ username, password }),
+            //     credentials: "include"
+            // })
 
             // await res.json();
 
             if (res.ok) {
-                setMessage("Login successfully, Token")
+                setMessage("Login successfully");
+                setTimeout(() => {
+                    navigate("/");          // to Homepage
+                }, 1000);
             } else {
-                setMessage("Error");
+                const error = await res.json();
+                setMessage(error.message);
             }
         } catch {
             setMessage("Error conect to server");
@@ -35,11 +48,11 @@ export default function Login() {
                 className="bg-white p-6 rounded shadow-md w-80"
             >
                 <h2 className="text-xl font-bold mb-4">Login</h2>
-                <label className="block mb-1">User name:</label>
+                <label className="block mb-1">Email:</label>
                 <input
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full border p-2 mb-4 rounded"
                 />
                 <label className="block mb-1">Password:</label>
@@ -56,5 +69,5 @@ export default function Login() {
             </form>
         </div>
 
-    )
+    );
 }
